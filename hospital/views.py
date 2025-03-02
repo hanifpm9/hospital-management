@@ -5,7 +5,7 @@ from .models import Patient, Appointment, Doctor, Department, Payment
 from .forms import PatientRegistrationForm, AppointmentForm  # Ensure this import is correct
 from datetime import timedelta
 from django.utils import timezone
-from django.db.models import Q
+from django.db.models import Q, F
 from django.core.paginator import Paginator
 
 def register_patient(request):
@@ -154,41 +154,61 @@ from decimal import Decimal
 
 from decimal import Decimal
 
+from decimal import Decimal
+from django.shortcuts import render, get_object_or_404, redirect
+from django.contrib import messages
+from .models import Appointment, Payment
+
 def payment_page(request, appointment_id):
     appointment = get_object_or_404(Appointment, id=appointment_id)
     total_amount = appointment.consultation_fee + 30  # Add registration fee
 
     if request.method == 'POST':
-        amount_received_str = request.POST.get('amount_received')
-        payment_method = request.POST.get('payment_method')
+        # Extract all payment methods and amounts from the POST data
+        payment_data = []
+        for key, value in request.POST.items():
+            if key.startswith('payment_method_'):
+                index = key.split('_')[-1]  # Extract the index (e.g., 1, 2, 3)
+                amount_key = f'amount_received_{index}'
+                payment_method = value
+                amount_received = request.POST.get(amount_key)
 
-        # Debug: Print form data
-        print(f"Amount received: {amount_received_str}, Payment Method: {payment_method}")
+                if amount_received:
+                    try:
+                        amount_received = Decimal(amount_received)
+                        payment_data.append((payment_method, amount_received))
+                    except (ValueError, TypeError):
+                        messages.error(request, f'Invalid amount received for {payment_method}.')
+                        return render(request, 'payment_page.html', {'appointment': appointment})
 
-        if not amount_received_str:
-            messages.error(request, 'Amount received is required.')
+        # Debug: Print payment data
+        print(f"Payment Data: {payment_data}")
+
+        # Calculate the total amount received
+        total_received = sum(amount for _, amount in payment_data)
+
+        # Debug: Print total received and total amount due
+        print(f"Total Received: {total_received}, Total Amount Due: {total_amount}")
+
+        # Validate the total amount received
+        if total_received < total_amount:
+            messages.error(request, f'Amount received (₹{total_received}) is less than the total amount due (₹{total_amount}).')
             return render(request, 'payment_page.html', {'appointment': appointment})
 
-        try:
-            amount_received = Decimal(amount_received_str)
-        except (ValueError, TypeError):
-            messages.error(request, 'Invalid amount received. Please enter a valid number.')
-            return render(request, 'payment_page.html', {'appointment': appointment})
+        # Create payment records for each payment method
+        for method, amount in payment_data:
+            Payment.objects.create(
+                patient=appointment.patient,
+                amount=amount,
+                payment_method=method,
+            )
 
-        # Check if the amount received is sufficient
-        if amount_received < total_amount:
-            messages.error(request, f'Amount received (₹{amount_received}) is less than the total amount due (₹{total_amount}).')
-            return render(request, 'payment_page.html', {'appointment': appointment})
+        # Update the appointment payment status
+        appointment.payment_status = 'Paid'  # Assuming you have a field `payment_status` in the Appointment model
+        appointment.save()
 
-        # Create payment record
-        Payment.objects.create(
-            patient=appointment.patient,
-            amount=amount_received,
-            payment_method=payment_method,
-        )
-
-        balance = amount_received - total_amount
-        messages.success(request, f'Payment successful! Received: ₹{amount_received} | Balance: ₹{balance}')
+        balance = total_received - total_amount
+        messages.success(request, f'Payment successful! Received: ₹{total_received} | Balance: ₹{balance}')
         return redirect('print_receipt', appointment_id=appointment.id)
 
     return render(request, 'payment_page.html', {'appointment': appointment})
@@ -210,42 +230,64 @@ def payment_page(request, appointment_id):
     total_amount = appointment.consultation_fee + 30  # Add registration fee
 
     if request.method == 'POST':
-        amount_received_str = request.POST.get('amount_received')
-        payment_method = request.POST.get('payment_method')
+        # Extract all payment methods and amounts from the POST data
+        payment_data = []
+        for key, value in request.POST.items():
+            if key.startswith('payment_method_'):
+                index = key.split('_')[-1]  # Extract the index (e.g., 1, 2, 3)
+                amount_key = f'amount_received_{index}'
+                payment_method = value
+                amount_received = request.POST.get(amount_key)
 
-        # Debug: Print form data
-        print(f"Amount received: {amount_received_str}, Payment Method: {payment_method}")
+                if amount_received:
+                    try:
+                        amount_received = Decimal(amount_received)
+                        payment_data.append((payment_method, amount_received))
+                    except (ValueError, TypeError):
+                        messages.error(request, f'Invalid amount received for {payment_method}.')
+                        return render(request, 'payment_page.html', {'appointment': appointment})
 
-        if not amount_received_str:
-            messages.error(request, 'Amount received is required.')
+        # Debug: Print payment data
+        print(f"Payment Data: {payment_data}")
+
+        # Calculate the total amount received
+        total_received = sum(amount for _, amount in payment_data)
+
+        # Debug: Print total received and total amount due
+        print(f"Total Received: {total_received}, Total Amount Due: {total_amount}")
+
+        print(f"Payment Status Before: {appointment.payment_status}")
+        appointment.payment_status = 'Paid'
+        appointment.save()
+        print(f"Payment Status After: {appointment.payment_status}")
+
+        # Validate the total amount received
+        if total_received < total_amount:
+            messages.error(request, f'Amount received (₹{total_received}) is less than the total amount due (₹{total_amount}).')
             return render(request, 'payment_page.html', {'appointment': appointment})
 
-        try:
-            amount_received = Decimal(amount_received_str)
-        except (ValueError, TypeError):
-            messages.error(request, 'Invalid amount received. Please enter a valid number.')
-            return render(request, 'payment_page.html', {'appointment': appointment})
+        # Create payment records for each payment method
+        for method, amount in payment_data:
+            Payment.objects.create(
+                patient=appointment.patient,
+                amount=amount,
+                payment_method=method,
+            )
 
-        if amount_received < total_amount:
-            messages.error(request, 'Amount received is less than the total amount.')
-            return render(request, 'payment_page.html', {'appointment': appointment})
-
-        # Create payment record
-        Payment.objects.create(
-            patient=appointment.patient,
-            amount=total_amount,
-            payment_method=payment_method,
-        )
-
-        balance = amount_received - total_amount
-        messages.success(request, f'Payment successful! Received: ₹{amount_received} | Balance: ₹{balance}')
+        balance = total_received - total_amount
+        messages.success(request, f'Payment successful! Received: ₹{total_received} | Balance: ₹{balance}')
         return redirect('print_receipt', appointment_id=appointment.id)
 
     return render(request, 'payment_page.html', {'appointment': appointment})
 
+
+from django.db.models import F  # Import F object
+
 def appointment_list(request):
     date = request.GET.get('date', timezone.now().date())
-    appointments = Appointment.objects.filter(date=date)
+    appointments = Appointment.objects.filter(date=date).annotate(
+        payment_status_display=F('payment_status')  # Use F object to reference the field
+    ).order_by('-date')  # Order by date in descending order
     return render(request, 'appointment_list.html', {'appointments': appointments})
 
 def home(request):

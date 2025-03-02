@@ -1,10 +1,34 @@
 {% extends "admin/base.html" %}
-{% load static %}
 
 {% block content %}
-<div class="form-container">
+<!DOCTYPE html>
+<html>
+<head>
+    <title>Appointment List</title>
+    <style>
+        table {
+            width: 100%;
+            border-collapse: collapse;
+        }
+        th, td {
+            padding: 8px;
+            text-align: left;
+            border-bottom: 1px solid #ddd;
+        }
+        th {
+            background-color: #f2f2f2;
+        }
+    </style>
+</head>
+<body>
     <h1>Appointment List</h1>
-    <table class="table table-bordered">
+    <form method="get">
+        <label for="date">Select Date:</label>
+        <input type="date" id="date" name="date" value="{{ date|date:'Y-m-d' }}">
+        <button type="submit">Filter</button>
+    </form>
+    <br>
+    <table>
         <thead>
             <tr>
                 <th>THQ</th>
@@ -22,13 +46,14 @@
                 <td>{{ appointment.patient.uhid }}</td>
                 <td>{{ appointment.patient.name }}</td>
                 <td>{{ appointment.doctor.name }}</td>
-                <td>{{ appointment.department.name }}</td>
+                <td>{{ appointment.department }}</td>
                 <td>{{ appointment.date }}</td>
                 <td>{{ appointment.token }}</td>
-                <td>{% if appointment.amount_paid >= appointment.consultation_fee %}Paid{% else %}Pending{% endif %}</td>
+                <td>{{ appointment.payment_status_display }}</td>
             </tr>
             {% endfor %}
         </tbody>
     </table>
-</div>
+</body>
+</html>
 {% endblock %}

@@ -70,6 +70,7 @@ class Appointment(models.Model):
     token = models.IntegerField(default=1)  # Ensure token is not NULL
     consultation_fee = models.DecimalField(max_digits=10, decimal_places=2, default=0.00)
     amount_paid = models.DecimalField(max_digits=10, decimal_places=2, default=0.00)
+    payment_status = models.CharField(max_length=20, default='Pending')
     payment_mode = models.CharField(max_length=50, choices=PAYMENT_MODES)
     next_appointment_date = models.DateField(blank=True, null=True)
 
