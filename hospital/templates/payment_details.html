@@ -1,0 +1,34 @@
+{% extends "admin/base.html" %}
+{% load static %}  <!-- Load static files -->
+
+{% block title %}Payment Details{% endblock %}  <!-- Optional: Add a custom title -->
+
+{% block extrastyle %}
+    <!-- Add custom admin CSS -->
+    <link rel="stylesheet" type="text/css" href="{% static 'admin/css/base.css' %}">
+    <link rel="stylesheet" type="text/css" href="{% static 'admin/css/dashboard.css' %}">
+{% endblock %}
+
+{% block content %}
+    <h1>Payment Details</h1>
+    <table class="table table-bordered">
+        <thead>
+            <tr>
+                <th>Patient</th>
+                <th>Amount</th>
+                <th>Payment Method</th>
+                <th>Date</th>
+            </tr>
+        </thead>
+        <tbody>
+            {% for payment in payments %}
+                <tr>
+                    <td>{{ payment.patient.name }} ({{ payment.patient.uhid }})</td>
+                    <td>₹{{ payment.amount }}</td>
+                    <td>{{ payment.payment_method }}</td>
+                    <td>{{ payment.date }}</td>
+                </tr>
+            {% endfor %}
+        </tbody>
+    </table>
+{% endblock %}

@@ -1,0 +1,39 @@
+form {
+    display: grid;
+    grid-template-columns: 1fr 1fr; /* Two equal columns */
+    gap: 10px; /* Spacing between grid items */
+    padding: 20px;
+    border: 1px solid #ccc;
+    border-radius: 5px;
+    background-color: white;
+}
+
+label {
+    grid-column: 1; /* Label in the first column */
+    text-align: right; /* Align labels to the right */
+    padding-right: 5px; /* Add some padding to the right of labels */
+}
+
+input, select, textarea {
+    grid-column: 2; /* Input in the second column */
+    width: 100%; /* Make inputs take full width of their column */
+    padding: 8px;
+    margin-bottom: 10px;
+    border: 1px solid #ccc;
+    border-radius: 4px;
+    box-sizing: border-box;
+}
+
+/* Style for error messages (if any) */
+.errorlist {
+    grid-column: 2; /* Place error messages in the input column */
+    color: red;
+    font-size: small;
+    margin-top: -5px; /* Adjust as needed */
+}
+
+/* Style for submit button */
+button[type="submit"] {
+    grid-column: 2;  /* Span the button across both columns if needed */
+    /* ... other button styles ... */
+}

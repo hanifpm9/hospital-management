@@ -1,0 +1,13 @@
+{% extends "admin/base.html" %}
+
+{% block content %}
+
+<h2>Payments List</h2>
+<ul>
+    {% for payment in payments %}
+        <li><a href="{% url 'payment_detail' payment.id %}">Payment of ₹{{ payment.amount }} by {{ payment.patient }}</a></li>
+    {% endfor %}
+<h3>Payment for {{ patient.name }}</h3>
+<p><strong>Pending Balance:</strong> ₹{{ pending_balance }}</p>
+</ul>
+{% endblock %}

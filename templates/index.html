@@ -1,0 +1,28 @@
+{% extends "admin/base_site.html" %}
+
+{% block content %}
+    {{ block.super }}  <!-- Preserve existing Django admin content -->
+
+    <h2>📊 Dashboard</h2>
+    <p>Total Patients: {{ patients }}</p>
+    
+    <canvas id="myChart"></canvas>
+
+    <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+    <script>
+        document.addEventListener("DOMContentLoaded", function () {
+            var ctx = document.getElementById("myChart").getContext("2d");
+            new Chart(ctx, {
+                type: "bar",
+                data: {
+                    labels: {{ labels|safe }},  // Injecting labels from Django context
+                    datasets: [{
+                        label: "Total Patients",
+                        data: {{ data|safe }},  // Injecting data from Django context
+                        backgroundColor: "rgba(54, 162, 235, 0.5)",
+                    }]
+                }
+            });
+        });
+    </script>
+{% endblock %}

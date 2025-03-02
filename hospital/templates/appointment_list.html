@@ -1,0 +1,34 @@
+{% extends "admin/base.html" %}
+{% load static %}
+
+{% block content %}
+<div class="form-container">
+    <h1>Appointment List</h1>
+    <table class="table table-bordered">
+        <thead>
+            <tr>
+                <th>THQ</th>
+                <th>Patient Name</th>
+                <th>Doctor</th>
+                <th>Department</th>
+                <th>Date</th>
+                <th>Token</th>
+                <th>Payment Status</th>
+            </tr>
+        </thead>
+        <tbody>
+            {% for appointment in appointments %}
+            <tr>
+                <td>{{ appointment.patient.uhid }}</td>
+                <td>{{ appointment.patient.name }}</td>
+                <td>{{ appointment.doctor.name }}</td>
+                <td>{{ appointment.department.name }}</td>
+                <td>{{ appointment.date }}</td>
+                <td>{{ appointment.token }}</td>
+                <td>{% if appointment.amount_paid >= appointment.consultation_fee %}Paid{% else %}Pending{% endif %}</td>
+            </tr>
+            {% endfor %}
+        </tbody>
+    </table>
+</div>
+{% endblock %}

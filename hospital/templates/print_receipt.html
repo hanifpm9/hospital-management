@@ -1,0 +1,52 @@
+{% extends "admin/base.html" %}
+
+{% block content %}
+
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Receipt</title>
+    <style>
+        body {
+            font-family: Arial, sans-serif;
+            width: 3in;  /* Thermal paper width */
+            margin: 0 auto;
+            padding: 10px;
+        }
+        .receipt {
+            text-align: center;
+        }
+        .receipt h2 {
+            font-size: 18px;
+            margin: 5px 0;
+        }
+        .receipt p {
+            font-size: 14px;
+            margin: 3px 0;
+        }
+    </style>
+</head>
+<body>
+    <div class="receipt">
+        <h2>Thaqdees Hospital</h2>
+        <p><strong>Patient:</strong> {{ appointment.patient.name }}</p>
+        <p><strong>UHID:</strong> {{ appointment.patient.uhid }}</p>
+        <p><strong>Doctor:</strong> {{ appointment.doctor.name }}</p>
+        <p><strong>Token:</strong> {{ appointment.token }}</p>
+        <p><strong>Amount:</strong> {{ appointment.consultation_fee }}</p>
+        <p><strong>User:</strong> {{ request.user.username }}</p>
+    </div>
+
+    <script>
+        window.onload = function() {
+            window.print();  // Automatically trigger print dialog
+            window.onafterprint = function() {
+                window.location.href = "{% url 'appointment_list' %}";  // Redirect after printing
+            };
+        };
+    </script>
+</body>
+</html>
+{% endblock %}

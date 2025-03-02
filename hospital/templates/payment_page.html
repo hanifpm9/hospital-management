@@ -1,0 +1,71 @@
+{% extends "admin/base.html" %}
+
+{% block content %}
+<!DOCTYPE html>
+<html>
+<head>
+    <title>Payment Page</title>
+</head>
+<body>
+    <h1>Payment Page</h1>
+
+    <!-- Display messages -->
+    {% if messages %}
+    <ul class="messages">
+        {% for message in messages %}
+        <li{% if message.tags %} class="{{ message.tags }}"{% endif %}>{{ message }}</li>
+        {% endfor %}
+    </ul>
+    {% endif %}
+
+    <h2>Appointment Details</h2>
+    <p><strong>Patient:</strong> {{ appointment.patient.name }} ({{ appointment.patient.uhid }})</p>
+    <p><strong>Doctor:</strong> {{ appointment.doctor.name }}</p>
+    <p><strong>Consultation Fee:</strong> ₹{{ appointment.consultation_fee }}</p>
+    <p><strong>Registration Fee:</strong> ₹30</p>
+    <p><strong>Total Amount:</strong> ₹{{ appointment.consultation_fee|add:30 }}</p>
+
+    <form method="post">
+        {% csrf_token %}
+        <div id="payment-methods">
+            <div class="payment-method">
+                <label for="payment_method_1">Payment Method:</label>
+                <select name="payment_method" required>
+                    <option value="Cash">Cash</option>
+                    <option value="UPI">UPI</option>
+                    <option value="Card">Card</option>
+                    <option value="Credit">Credit</option>
+                </select>
+                <label for="amount_received_1">Amount Received:</label>
+                <input type="number" name="amount_received" step="0.01" min="0" required>
+            </div>
+        </div>
+        <button type="button" onclick="addPaymentMethod()">Add Payment Method</button>
+        <br><br>
+        <button type="submit">Submit Payment</button>
+    </form>
+
+    <script>
+        let paymentMethodCount = 1;
+
+        function addPaymentMethod() {
+            paymentMethodCount++;
+            const newMethod = document.createElement('div');
+            newMethod.classList.add('payment-method');
+            newMethod.innerHTML = `
+                <label for="payment_method_${paymentMethodCount}">Payment Method:</label>
+                <select name="payment_method" required>
+                    <option value="Cash">Cash</option>
+                    <option value="UPI">UPI</option>
+                    <option value="Card">Card</option>
+                    <option value="Credit">Credit</option>
+                </select>
+                <label for="amount_received_${paymentMethodCount}">Amount Received:</label>
+                <input type="number" name="amount_received" step="0.01" min="0" required>
+            `;
+            document.getElementById('payment-methods').appendChild(newMethod);
+        }
+    </script>
+</body>
+</html>
+{% endblock %}

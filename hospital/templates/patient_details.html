@@ -1,0 +1,25 @@
+{% extends 'base.html' %}  {% block title %}Patient Details{% endblock %}  {% block content %}
+    <a href="{% url 'generate_receipt' patient.id %}">Download Receipt</a>
+    <p>Patient Name: {{ patient.name }}</p>
+    <p>UHID: {{ patient.UHID }}</p>
+<h3>Pending Payments</h3>
+<table>
+    <tr>
+        <th>Service</th>
+        <th>Total Amount</th>
+        <th>Paid</th>
+        <th>Balance</th>
+    </tr>
+    {% for payment in pending_payments %}
+    <tr>
+        <td>Consultation with Dr. {{ payment.doctor.name }}</td>
+        <td>₹{{ payment.total_amount }}</td>
+        <td>₹{{ payment.amount_paid }}</td>
+        <td>₹{{ payment.balance_due }}</td>
+    </tr>
+    {% endfor %}
+</table>
+{% endblock %}
+
+
+
