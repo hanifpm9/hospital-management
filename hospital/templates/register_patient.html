@@ -1,15 +1,26 @@
-{% extends "admin/base.html" %}
-{% load static %} 
+{% extends "base.html" %}
 
 {% block content %}
-<div class="form-container">
-    <h1 class="text-center">Register Patient</h1>
-    <link rel="stylesheet" type="text/css" href="{% static 'admin/css/base.css' %}">
-    <link rel="stylesheet" type="text/css" href="{% static 'admin/css/dashboard.css' %}">
+<div class="container">
+    <h2>Register Patient</h2>
     <form method="post">
         {% csrf_token %}
-        {{ form.as_p }}  <!-- Use Django's form rendering -->
-        <button type="submit" class="btn btn-primary btn-block">Register</button>
+        <div class="form-grid">
+            {% for field in form %}
+                <div class="form-group">
+                    <label for="{{ field.id_for_label }}">{{ field.label }}</label>
+                    {{ field }}
+                    {% if field.errors %}
+                        <ul class="errorlist">
+                            {% for error in field.errors %}
+                                <li>{{ error }}</li>
+                            {% endfor %}
+                        </ul>
+                    {% endif %}
+                </div>
+            {% endfor %}
+        </div>
+        <button type="submit" class="btn btn-primary">Register</button>
     </form>
 </div>
 {% endblock %}

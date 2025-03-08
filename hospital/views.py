@@ -342,3 +342,7 @@ def patient_list(request):
     page_number = request.GET.get('page')
     page_obj = paginator.get_page(page_number)
     return render(request, 'patient_list.html', {'page_obj': page_obj})
+
+def home(request):
+    """Render the home page."""
+    return render(request, 'home.html')

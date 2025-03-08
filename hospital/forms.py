@@ -17,8 +17,7 @@ class AppointmentForm(forms.ModelForm):
         model = Appointment
         fields = ['patient', 'doctor', 'department', 'date']
         widgets = {
-            'date': forms.DateInput(attrs={'type': 'date'}),
-            'appointment_time': forms.TimeInput(attrs={'type': 'time'}),
+            'date': forms.DateInput(attrs={'type': 'date'}),  # Use HTML5 date input
         }
 
     def __init__(self, *args, **kwargs):

@@ -17,4 +17,5 @@ urlpatterns = [
     path('patient-list/', views.patient_list, name='patient_list'),
     path('revenue-report/', views.revenue_report, name='revenue_report'),
     path('search-patient/', views.search_patient, name='search_patient'),
+    path('', views.home, name='home'),  # Home page
 ]
